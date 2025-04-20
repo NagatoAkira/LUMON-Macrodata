@@ -24,12 +24,12 @@ class ChangeSizeAnimation{
 		this.container = container
 		this.object = object
 	
-		this.animation = {size:1,distance:50,speed:0.05}
+		this.animation = {size:1,distance:50,speed:0.05, isChange:false}
 
 		this.max = {size:2.5}
 		this.min = {size:1}
 
-		this.font = {size:25}
+		this.font = {size:25, isChange:false}
 	}
 	isNearbyMouse(){
 		// Check is Nearby Mouse Position To Digit
@@ -53,24 +53,26 @@ class ChangeSizeAnimation{
 		// Increase Object if Mouse is Nearby
 		// And Decrease if Mouse is Far 
 		let speed = this.animation.speed
+		this.animation.isChange = false
 		if(this.isNearbyMouse()){
 		if(this.isMaxSize()){
 			this.animation.size += speed
+			this.animation.isChange = true
 		}
 		}
 		else{
 		if(this.isMinSize()){
 			this.animation.size -= speed
+			this.animation.isChange = true
 		}
 		}
 	}
 	animate(){
 		// ATTENTION!
 		// FIX THIS MOMENT WITH FALSE CHANGES
-		ctx.font = (this.font.size*this.animation.size).toString()+"px sans-serif"
-		console.log(ctx.font)
 		this.regulateDigitObject()
 		ctx.font = (this.font.size).toString()+"px sans-serif"
+		ctx.font = Math.round((this.font.size*this.animation.size)).toString()+"px sans-serif"
 	}
 }
 
