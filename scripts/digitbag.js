@@ -1,6 +1,118 @@
 class DigitBag{
-	constructor(){
+	constructor(x,y){
+		this.x = x
+		this.y = y
+
+		this.index = -1 // Will be defined in "GameManager" class
+
+		this.width = 150
+		this.height = 40
+
+		this.animations = {doors:null}
+		this.animations.doors = new DoorsAnimation(this)
+
+		this.isActivated = false
+	}
+	draw(){
+		ctx.strokeStyle = "white"
+		ctx.lineWidth = 2
+		ctx.strokeRect(this.x-this.width/2, this.y-this.height/2, this.width, this.height)
+	}
+	animate(){
+		this.animations.doors.animate()
+	}
+	update(){
+		this.animations.doors.isActivated = this.isActivated
+
+		this.draw()
+		this.animate()
+	}
+}
+class DoorsAnimation{
+	constructor(self){
+		this.self = self
+
+		this.doorwidth = 30
+
 		this.x = 0
-		this.y = 0
+		this.y = 0 
+
+		// Dots will work only on one side of box and, but in on another side will projected like mirror
+		// Dots using ONLY in 'draw' function
+		this.dots = {passive:
+					 [{x:-this.self.width/2, y:0},
+		 			 {x:-this.self.width/2, y:1},],
+		 			 
+		 			 active:[
+		 			 {x:0, y:1},
+		 			 {x:0, y:0},
+		 			 ]
+		 			}
+
+		this.progess = {progress:0, max:40} 			
+		this.isActivated = false	
+	}
+	draw(){
+		let dw = this.doorwidth*this.progess.progress/this.progess.max
+		let x,y
+		x = this.self.x
+		y = this.self.y-this.self.height/2-dw
+		
+
+		let firstdot = this.dots.passive[0]
+		// Left Door
+		ctx.beginPath()
+		ctx.moveTo(x+firstdot.x, y+firstdot.y*dw)
+		for(let dot in this.dots.passive){
+			dot = this.dots.passive[dot]
+			ctx.lineTo(x+dot.x, y+dot.y*dw)
+		}
+		for(let dot in this.dots.active){
+			dot = this.dots.active[dot]
+			ctx.lineTo(x+dot.x+this.x, y+dot.y*dw+this.y)
+		}
+		ctx.lineTo(x+firstdot.x, y+firstdot.y*dw)
+		ctx.stroke()
+
+		// Right Door
+		ctx.beginPath()
+		ctx.moveTo(x-firstdot.x, y+firstdot.y*dw)
+		for(let dot in this.dots.passive){
+			dot = this.dots.passive[dot]
+			ctx.lineTo(x-dot.x, y+dot.y*dw)
+		}
+		for(let dot in this.dots.active){
+			dot = this.dots.active[dot]
+			ctx.lineTo(x-(dot.x+this.x), y+(dot.y*dw+this.y))
+		}
+		ctx.lineTo(x-firstdot.x, y+firstdot.y*dw)
+		ctx.stroke()
+	}
+	movedoors(){
+		// Move Doors after Activation
+		let width = this.self.width/2
+		let progess = this.progess.progress/this.progess.max // Converted to precents
+
+		this.x = (Math.sin(Math.PI/2+Math.PI*3/4*progess)-1)*width 
+		this.y = (Math.cos(Math.PI/2+Math.PI*3/4*progess))*width
+	}
+	activatedoors(){
+		// Listener To Watch Activation Of Doors
+		let progess = this.progess.progress
+		if(this.isActivated){
+		if(progess<this.progess.max){
+			this.progess.progress++
+		}
+		}
+		else{
+		if(progess>0){
+			this.progess.progress--
+		}
+		}
+	}
+	animate(){
+		this.activatedoors()
+		this.movedoors()
+		this.draw()
 	}
 }

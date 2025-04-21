@@ -8,7 +8,9 @@ function clearScene(){
 	ctx.clearRect(0,0,canvas.width, canvas.height)
 }
 
-var test = new DigitContainer(150,150)
+var gamemanager = new GameManager()
+
+var test001 = new DigitBag(150,600)
 
 ctx.fillStyle = "white"
 console.log(ctx.font)
@@ -20,7 +22,21 @@ function main(){
 	window.requestAnimationFrame(main)
 	}, 1000/fps)
 	clearScene()
-	test.update()
+	gamemanager.update()
+
+	test001.update()
 	mouse.isClicked = false
+}
+onkeydown = function(event){
+	let index = parseInt(event.key)-1
+	if(gamemanager.digitBags[index]!=null){
+		if(gamemanager.activeDigitBag.index == index+1){
+			gamemanager.activeDigitBag.isActivated = !gamemanager.activeDigitBag.isActivated
+			return
+		}
+		gamemanager.activeDigitBag.isActivated = false
+		gamemanager.activeDigitBag = gamemanager.digitBags[index]
+		gamemanager.activeDigitBag.isActivated = true
+	}
 }
 main()
