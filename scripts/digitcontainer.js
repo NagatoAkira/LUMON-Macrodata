@@ -1,17 +1,19 @@
 class DigitContainer{
 	constructor(x=0,y=0){
-		this.container = {x:x, y:y, radius:20}
-		this.object = {x:0, y:0, digit:"5", size:1}
-		this.font = {size:25}
+		this.container = {x:x, y:y, radius:10}
+		this.object = {x:0, y:0, digit:Math.round(Math.random()*10)%9+1, size:1}
+		this.font = {size:10}
 
 		this.animation = {shake:null}
 		this.animation.shake = new IdleShakeAnimation(this.container,this.object)
 		this.animation.size = new IdleDistanceSizeAnimation(this.container, this.object)
-		this.animation.catch = new CatchAnimation(this.container, this.object, this.font)
+		this.animation.catch = new CatchAnimation(this)
 
 		this.isCatched = false // Detect Mouse Interact With This Digit
 		this.isSent = false // State To Stop Any Operations after Collecting Correct Digit Group
 		this.isVisible = true // Just Visibility Of Object
+
+		this.scale = 1
 	}
 	animate(){
 		if(this.isSent){return}
@@ -25,7 +27,7 @@ class DigitContainer{
 		// All resize variables
 		let size = this.animation.size.animation.size
 		let catch_ = this.animation.catch.animation.size
-		this.object.size = size+catch_
+		this.object.size = (size+catch_)*this.scale
 		}
 
 		ctx.font = (this.font.size).toString()+"px sans-serif"
@@ -43,8 +45,6 @@ class DigitContainer{
 	update(){
 		if(!this.isVisible){return}
 
-		this.isCatched = this.animation.catch.isCatched
-
 		this.resize()
 
 		this.animate()
@@ -52,14 +52,13 @@ class DigitContainer{
 	}
 }
 class CatchAnimation{
-	constructor(container, object, font){
-		this.container = container
-		this.object = object
-		this.font = font
+	constructor(self){
+		this.self = self
+		this.container = self.container
+		this.object = self.object
+		this.font = self.font
 
 		this.animation = {size:0,speed:0.1, max:1.1}
-
-		this.isCatched = false
 	}
 	resizeDigit(PositiveOrNegative = 1, minormax = 1){
 		// Generally resize digit with your input data
@@ -84,7 +83,7 @@ class CatchAnimation{
 	detectCatchState(){
 		// Change state as catched with some operations
 		if(this.animation.size > 0.5*this.animation.max){
-			this.isCatched = true
+			this.self.isCatched = true
 		}
 	}
 	resizeOnMouseInteract(){
@@ -102,7 +101,7 @@ class CatchAnimation{
 		}
 	}
 	animate(){
-		this.resizeOnMouseInteract()
+		this.resizeOnMouseInteract()	
 	}
 }
 class IdleDistanceSizeAnimation{
@@ -114,7 +113,7 @@ class IdleDistanceSizeAnimation{
 
 		this.font = {size:25}
 
-		this.area = {min: 50, max:150}
+		this.area = {min: 60, max:120}
 	}
 	resizeDigit(PositiveOrNegative = 1, minormax = 1){
 		// Generally resize digit with your input data
@@ -142,7 +141,7 @@ class IdleDistanceSizeAnimation{
 		let dist = getDistance(this.container.x+this.object.x,
 							   this.container.y+this.object.y,
 							   mouse.x, mouse.y)
-		let rank = {min:1.2, max:1.5}
+		let rank = {min:1.2, max:1.8}
 		if(dist<area.min){
 			this.resizeDigit(1,rank.max)
 			return
@@ -180,13 +179,13 @@ class IdleShakeAnimation{
 							Math.random().toFixed(2)*(-1)**(Math.round(Math.random())+1), 
 							Math.random().toFixed(2)*(-1)**(Math.round(Math.random())+1))
 
-		pos.x = this.container.x + pos.x*rad
-		pos.y = this.container.y + pos.y*rad
+		pos.x = pos.x*rad
+		pos.y = pos.y*rad
 
 		this.animation.position.x = pos.x
 		this.animation.position.y = pos.y
 
-		let dir = getNormal(this.container.x+this.object.x, this.container.y+this.object.y,
+		let dir = getNormal(this.object.x, this.object.y,
 							pos.x, pos.y)
 		this.animation.direction.x = dir.x
 		this.animation.direction.y = dir.y
@@ -194,12 +193,10 @@ class IdleShakeAnimation{
 	doMakeNewPositionGenerationForShake(){
 		// Check Position Of Digit Object To Get Access of New Postion Generation 
 		let pos1 = {x:0,y:0}
-		pos1.x = this.container.x+this.object.x
-		pos1.y = this.container.y+this.object.y
+		pos1.x = this.object.x
+		pos1.y = this.object.y
 		let pos2 = {x:0,y:0}
-		pos2.x = this.animation.position.x
-		pos2.y = this.animation.position.y
-		return (getDistance(pos1.x,pos1.y,pos2.x,pos2.y) < this.animation.speed)
+		return (getDistance(pos1.x,pos1.y,pos2.x,pos2.y) > this.container.radius)
 	}
 	generateRandomPositionForShake(){
 		// Generate New Position For Shake Effect

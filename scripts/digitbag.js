@@ -5,8 +5,8 @@ class DigitBag{
 
 		this.index = -1 // Will be defined in "GameManager" class
 
-		this.width = 150
-		this.height = 40
+		this.width = 100
+		this.height = 30
 
 		this.animations = {doors:null}
 		this.animations.doors = new DoorsAnimation(this)
@@ -32,7 +32,7 @@ class DoorsAnimation{
 	constructor(self){
 		this.self = self
 
-		this.doorwidth = 30
+		this.doorwidth = 10
 
 		this.x = 0
 		this.y = 0 
