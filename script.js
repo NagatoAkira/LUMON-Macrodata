@@ -3,13 +3,13 @@ ctx = canvas.getContext('2d')
 
 canvas.height = 480
 canvas.width = 640
+console.log(canvas)
 
 function clearScene(){
 	ctx.clearRect(0,0,canvas.width, canvas.height)
 	ctx.fillStyle = "#00416a"
 	ctx.fillRect(0,0,canvas.width, canvas.height)
 }
-
 var gamemanager = new GameManager()
 
 ctx.fillStyle = "white"

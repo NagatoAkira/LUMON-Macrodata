@@ -2,8 +2,8 @@ class GameManager{
 	constructor(){
 		// To initialize Countainer Grid 
 		this.initData = {}
-		this.initData.rows = 5
-		this.initData.columns = 5
+		this.initData.rows = 35
+		this.initData.columns = 35
 		this.initData.scale = 40
 
 		this.containerGrid = []
@@ -13,19 +13,26 @@ class GameManager{
 
 		this.activeDigitBag = null
 
+		// To Move Map Using Mouse
+		this.x = 0
+		this.y = 0
+
+		// To Scale Map
 		this.scale = 1
 
 		this.operations = {send:new SendOperation(this)}
 		this.operations.restore = new RestoreOperation(this)
 		this.operations.scale = new ScaleOperation(this)
+		this.operations.background = new DrawBackground(this)
+		this.operations.move = new MoveMap(this)
 	}
 	init(){
 		let scale = this.initData.scale
 		let rows = this.initData.rows
 		let columns = this.initData.columns
 		let x,y
-		x = canvas.width/2-scale*rows/2
-		y = canvas.height/2-scale*columns/2
+		x = canvas.width/2-rows*scale/2+scale/2-0.1
+		y = canvas.height/2-columns*scale/2+scale/2-0.1
 		for(let i=0; i<rows; i++){
 		for(let j=0; j<columns; j++){
 			this.containerGrid.push(new DigitContainer(x+i*scale,y+j*scale))
@@ -45,6 +52,10 @@ class GameManager{
 		for(let cont in this.containerGrid){
 			this.containerGrid[cont].update()
 		}
+
+		// Draw Background
+		this.operations.background.update()
+
 		for(let bag in this.digitBags){
 			this.digitBags[bag].update()
 		}
@@ -52,6 +63,129 @@ class GameManager{
 		this.operations.send.update()
 		this.operations.restore.update()
 		this.operations.scale.update()
+		this.operations.move.update()
+		
+	}
+}
+class DrawBackground{
+	constructor(self){
+		this.self = self
+
+		this.color = "#00416a"
+	}
+	drawUpperBorder(){
+		let h = 70
+		ctx.fillRect(0,0,canvas.width,h)
+		ctx.strokeRect(0,0,canvas.width,h)
+	}
+	drawLowerBorder(){
+		let h = 100
+		ctx.fillRect(0,canvas.height-h,canvas.width,h)
+		ctx.strokeRect(0,canvas.height-h,canvas.width,h)
+	}
+	drawAllSent(){
+		// Make Background not working ONLY for Sent Digits
+		ctx.fillStyle = "white"
+		let sent = this.self.operations.send.allSent
+		for(let obj in sent){
+			obj = sent[obj]
+			obj.update()
+		}
+		ctx.fillStyle = this.color
+	}
+	update(){
+		ctx.fillStyle = this.color
+
+		this.drawUpperBorder()
+		this.drawLowerBorder()
+		this.drawAllSent()
+
+		ctx.fillStyle = "white"
+	}
+}
+class MoveMap{
+	constructor(self){
+		this.self = self
+
+		this.speed = 0
+
+		this.x = 0
+		this.y = 0
+
+		// Block Statement
+		this.block = null
+	}
+	stateBlockMovement(){
+		let containers = this.self.containerGrid
+
+		let first = containers[0].container
+		let last = containers[containers.length-1].container
+
+		let norm = getNormal(canvas.width/2, canvas.height/2,
+							 mouse.x, mouse.y)
+
+		let x,y
+		x = canvas.width/2
+		y = canvas.height/2
+		let w,h
+		w = canvas.width-50
+		h = canvas.height/2
+
+		let spd = this.speed
+		let state01 = (x > first.x-norm.x*spd+w/2 && x < last.x-norm.x*spd-w/2)
+		let state02 = (y > first.y-norm.y*spd+h/2+100 && y < last.y-norm.y*spd-h/2)
+		
+		this.block = {x:!state01, y:!state02}
+	}
+	countMoveSpeed(){
+		// Count Speed Relative of Mouse Position
+		let dist = getDistance(canvas.width/2, canvas.height/2,
+							   mouse.x, mouse.y)
+		let speed = {min:1.1, max:4}
+
+		let min = 150
+		if(dist > min){
+			this.speed = speed.min
+		}else{
+			this.speed = 0
+		}
+
+		let max = 200
+		this.speed *= (dist-min)/(max-min)*speed.max
+		if(dist > max){
+			this.speed = speed.max
+		}
+	}
+	moveMap(){
+		let block = this.block
+		// Move Position in Map
+		let norm = getNormal(canvas.width/2, canvas.height/2,
+							 mouse.x, mouse.y)
+		if(!block.x){
+		this.self.x -= norm.x*this.speed
+		}
+		if(!block.y){
+		this.self.y -= norm.y*this.speed
+		}
+	}
+	updatePosition(){
+		let containers = this.self.containerGrid
+		for(let obj in containers){
+			obj = containers[obj]
+			let con = obj.container
+			con.x -= this.x
+			con.y -= this.y
+			con.x += this.self.x
+			con.y += this.self.y
+		}
+		this.x = this.self.x
+		this.y = this.self.y
+	}
+	update(){
+		this.stateBlockMovement()
+		this.countMoveSpeed()
+		this.moveMap()
+		this.updatePosition()
 	}
 }
 class ScaleOperation{
@@ -94,6 +228,24 @@ class ScaleOperation{
 			anim.speed *= this.self.scale  
 		}
 	}
+	refillSpeedVariables(){
+		// Scale Also Speed Variables
+		let containers = this.self.containerGrid
+		for(let obj in containers){
+			obj = containers[obj]
+			let anim = obj.animation.shake.animation
+			anim.speed /= this.scale
+			anim.speed *= this.self.scale
+		}
+	}
+	batchScalewithMovement(){
+		// When scale up in corner of all area it goes out of it
+		// So this method fix that
+		if(this.scale-this.self.scale > 0){
+			this.self.x /= this.scale
+			this.self.y /= this.scale 
+		}
+	}
 	changeScaleVariable(){
 		// To Scale Up or To Scale Down
 		let predict = this.self.scale + this.direction
@@ -104,6 +256,10 @@ class ScaleOperation{
 	update(){
 		this.resizeDigitContainers()
 		this.moveGridBorders()
+		this.refillSpeedVariables()
+
+		this.batchScalewithMovement()
+
 		this.scale = this.self.scale
 
 		this.changeScaleVariable()
@@ -121,7 +277,7 @@ class RestoreOperation{
 	init(){
 		for(let obj in this.self.containerGrid){
 			obj = this.self.containerGrid[obj]
-			obj.restoreTimer = new Timer(60*10)
+			obj.restoreTimer = new Timer(60*15)
 		}
 	}
 	collectAllSent(){
@@ -226,6 +382,8 @@ class SendOperation{
 					obj.isVisible = false
 					obj.fadeTimer.restart()
 					delete this.allSent[i]
+
+					this.self.activeDigitBag.increaseProgress(1)
 				}
 			}
 		}

@@ -58,7 +58,7 @@ class CatchAnimation{
 		this.object = self.object
 		this.font = self.font
 
-		this.animation = {size:0,speed:0.1, max:1.1}
+		this.animation = {size:0,speed:0.1, max:1.5}
 	}
 	resizeDigit(PositiveOrNegative = 1, minormax = 1){
 		// Generally resize digit with your input data

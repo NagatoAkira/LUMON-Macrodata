@@ -10,8 +10,19 @@ class DigitBag{
 
 		this.animations = {doors:null}
 		this.animations.doors = new DoorsAnimation(this)
+		this.animations.progress = new ProgressAnimation(this)
 
 		this.isActivated = false
+
+		// Progress of fullfillness
+		this.progress = 0
+	}
+	increaseProgress(step){
+		if(this.progress>100){
+			this.progress=100
+			return
+		}
+		this.progress += step
 	}
 	draw(){
 		ctx.strokeStyle = "white"
@@ -20,12 +31,49 @@ class DigitBag{
 	}
 	animate(){
 		this.animations.doors.animate()
+		this.animations.progress.animate()
 	}
 	update(){
 		this.animations.doors.isActivated = this.isActivated
 
 		this.draw()
 		this.animate()
+	}
+}
+class ProgressAnimation{
+	constructor(self){
+		this.self = self
+
+		this.progress = 0
+	}
+	drawProgress(){
+		let x,y
+		x = this.self.x
+		y = this.self.y
+		let w,h
+		w = this.self.width
+		h = this.self.height
+
+		let gap = 10
+		ctx.strokeStyle = "white"
+		ctx.strokeRect(x-w/2, y-h/2+h+gap, w, h/2)
+
+		let progress = this.progress/100
+
+		ctx.fillStyle = "white"
+		ctx.fillRect(x-w/2, y-h/2+h+gap, w*progress, h/2)
+	}
+	refillBar(){
+		// Change progress with animation
+		let step = 1
+
+		if(this.self.progress > this.progress){
+			this.progress += step
+		}
+	}
+	animate(){
+		this.drawProgress()
+		this.refillBar()
 	}
 }
 class DoorsAnimation{

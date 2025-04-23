@@ -13,6 +13,9 @@ class Timer{
 	}
 	restart(){
 		this.start=this.max
-		this.isStop=false
+	}
+	change(start){
+		this.start = start
+		this.max = start
 	}
 }
