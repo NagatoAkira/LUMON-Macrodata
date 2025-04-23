@@ -3,17 +3,18 @@ ctx = canvas.getContext('2d')
 
 canvas.height = 480
 canvas.width = 640
-console.log(canvas)
+
+var colors = {dark:"#102136", light:"#c2fffe"}
 
 function clearScene(){
 	ctx.clearRect(0,0,canvas.width, canvas.height)
-	ctx.fillStyle = "#00416a"
+	ctx.fillStyle = "#102136"
 	ctx.fillRect(0,0,canvas.width, canvas.height)
 }
 var gamemanager = new GameManager()
 
-ctx.fillStyle = "white"
-ctx.font = "25px sans-serif"
+
+
 var fps = 60 
 
 function main(){
@@ -21,7 +22,7 @@ function main(){
 	window.requestAnimationFrame(main)
 	}, 1000/fps)
 	clearScene()
-	ctx.fillStyle = "white"
+	ctx.fillStyle = "#c2fffe"
 
 	gamemanager.update()
 

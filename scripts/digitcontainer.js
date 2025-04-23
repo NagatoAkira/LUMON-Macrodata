@@ -2,7 +2,7 @@ class DigitContainer{
 	constructor(x=0,y=0){
 		this.container = {x:x, y:y, radius:10}
 		this.object = {x:0, y:0, digit:Math.round(Math.random()*10)%9+1, size:1}
-		this.font = {size:10}
+		this.font = {size:12}
 
 		this.animation = {shake:null}
 		this.animation.shake = new IdleShakeAnimation(this.container,this.object)
@@ -30,8 +30,8 @@ class DigitContainer{
 		this.object.size = (size+catch_)*this.scale
 		}
 
-		ctx.font = (this.font.size).toString()+"px sans-serif"
-		ctx.font = Math.round((this.font.size*this.object.size)).toString()+"px sans-serif"
+		ctx.font = "bold "+(this.font.size).toString()+"px sans-serif"
+		ctx.font = "bold "+Math.round((this.font.size*this.object.size)).toString()+"px sans-serif"
 	}
 	checkVisibility(){
 		let x,y
@@ -211,6 +211,6 @@ class IdleShakeAnimation{
 		let speed = this.animation.speed
 		this.move(dir.x*speed, dir.y*speed)
 
-		ctx.fillRect(this.container.x-5, this.container.y-5,10,10)
+		//ctx.fillRect(this.container.x-5, this.container.y-5,10,10)
 	}
 }

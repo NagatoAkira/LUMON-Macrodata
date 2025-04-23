@@ -41,7 +41,7 @@ class GameManager{
 
 		// Update Another Data for Digit Bags
 		scale = 70
-		y = 80
+		y = 74
 		x = canvas.width/2-scale*5*1.6/2+55
 		for(let i=0; i<5; i++){
 			this.digitBags.push(new DigitBag(x+i*scale*1.6, y+scale*4.8))
@@ -56,6 +56,7 @@ class GameManager{
 		// Draw Background
 		this.operations.background.update()
 
+		ctx.font = "12px sans-serif"
 		for(let bag in this.digitBags){
 			this.digitBags[bag].update()
 		}
@@ -71,36 +72,76 @@ class DrawBackground{
 	constructor(self){
 		this.self = self
 
-		this.color = "#00416a"
+		this.generalProgress = 0
+	}
+	countGeneralProgress(){
+		// Count General Progress From Every Digit Bag
+		let progress = 0
+		for(let bag in this.self.digitBags){
+			bag = this.self.digitBags[bag]
+			progress += bag.progress
+		}
+		this.generalProgress = Math.round(progress/5)
 	}
 	drawUpperBorder(){
-		let h = 70
+		let h = 60
 		ctx.fillRect(0,0,canvas.width,h)
-		ctx.strokeRect(0,0,canvas.width,h)
+		ctx.strokeRect(-1,-1,canvas.width+2,h-5)
+
+		// Decorative Line
+		let gap = 3
+		ctx.beginPath()
+		ctx.moveTo(0,h-gap)
+		ctx.lineTo(canvas.width,h-gap)
+		ctx.stroke()
+		ctx.closePath()
+
+		// Draw File Name
+		let gapX,gapY
+		gapX = 30
+		gapY = 15
+		ctx.strokeRect(gapX,gapY,canvas.width-gapX*2, h-gapY*2)
+		ctx.strokeStyle = colors.light
+		ctx.font = "bold 22px sans-serif"
+		ctx.lineWidth = 1
+		ctx.strokeText(this.generalProgress.toString()+"% "+"Complete",canvas.width-gapX-200,h/2+7)
+		ctx.fillStyle = colors.dark
+		ctx.lineWidth = 2
 	}
 	drawLowerBorder(){
-		let h = 100
+		ctx.strokeStyle = colors.light
+		let h = 90
 		ctx.fillRect(0,canvas.height-h,canvas.width,h)
-		ctx.strokeRect(0,canvas.height-h,canvas.width,h)
+		ctx.strokeRect(-1,canvas.height-h,canvas.width+2,h+1)
+
+		// Decorative Line
+		let gap = 3
+		ctx.beginPath()
+		ctx.moveTo(0,canvas.height-h+gap)
+		ctx.lineTo(canvas.width,canvas.height-h+gap)
+		ctx.stroke()
+		ctx.closePath()
 	}
 	drawAllSent(){
 		// Make Background not working ONLY for Sent Digits
-		ctx.fillStyle = "white"
+		ctx.fillStyle = colors.light
 		let sent = this.self.operations.send.allSent
 		for(let obj in sent){
 			obj = sent[obj]
 			obj.update()
 		}
-		ctx.fillStyle = this.color
+		ctx.fillStyle = colors.dark
 	}
 	update(){
-		ctx.fillStyle = this.color
+		this.countGeneralProgress()
+
+		ctx.fillStyle = colors.dark
 
 		this.drawUpperBorder()
 		this.drawLowerBorder()
 		this.drawAllSent()
 
-		ctx.fillStyle = "white"
+		ctx.fillStyle = colors.light
 	}
 }
 class MoveMap{
@@ -124,16 +165,17 @@ class MoveMap{
 		let norm = getNormal(canvas.width/2, canvas.height/2,
 							 mouse.x, mouse.y)
 
+		let scl = this.self.scale
 		let x,y
 		x = canvas.width/2
 		y = canvas.height/2
 		let w,h
-		w = canvas.width-50
-		h = canvas.height/2
+		w = (canvas.width-50)/scl
+		h = canvas.height/2/scl
 
 		let spd = this.speed
 		let state01 = (x > first.x-norm.x*spd+w/2 && x < last.x-norm.x*spd-w/2)
-		let state02 = (y > first.y-norm.y*spd+h/2+100 && y < last.y-norm.y*spd-h/2)
+		let state02 = (y > first.y-norm.y*spd+h/2+30/scl && y < last.y-norm.y*spd-h/2)
 		
 		this.block = {x:!state01, y:!state02}
 	}
@@ -241,6 +283,15 @@ class ScaleOperation{
 	batchScalewithMovement(){
 		// When scale up in corner of all area it goes out of it
 		// So this method fix that
+		let data = this.self.initData
+		let precents = 0.25
+		if(Math.abs(this.self.x) < data.scale * data.rows * precents *this.self.scale){
+			return
+		}
+		if(Math.abs(this.self.x) < data.scale * data.columns * precents *this.self.scale){
+			return
+		}
+
 		if(this.scale-this.self.scale > 0){
 			this.self.x /= this.scale
 			this.self.y /= this.scale 

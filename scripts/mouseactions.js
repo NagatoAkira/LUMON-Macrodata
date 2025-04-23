@@ -8,6 +8,6 @@ onmousedown = function(event){
 	mouse.isPressed = true
 }
 onmousemove = function(event){
-	mouse.x = event.clientX
-	mouse.y = event.clientY
+	mouse.x = event.clientX - window.innerWidth/2 + canvas.width/2
+	mouse.y = event.clientY - window.innerHeight/2 + canvas.height/2
 }
