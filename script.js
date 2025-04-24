@@ -12,8 +12,8 @@ function clearScene(){
 	ctx.fillRect(0,0,canvas.width, canvas.height)
 }
 var gamemanager = new GameManager()
-
-
+var gameover = new GameOver()
+var scenemanager = new SceneManager(gamemanager, gameover)
 
 var fps = 60 
 
@@ -24,38 +24,9 @@ function main(){
 	clearScene()
 	ctx.fillStyle = "#c2fffe"
 
-	gamemanager.update()
+	scenemanager.update()
 
 
 	mouse.isClicked = false
-
-}
-onkeydown = function(event){
-	// Scale Objects
-	if(event.key == "+"){
-		gamemanager.operations.scale.direction = 0.05
-	}
-	if(event.key == "-"){
-		gamemanager.operations.scale.direction = -0.05
-	}
-}
-onkeyup = function(event){
-	// Stop Scale
-	gamemanager.operations.scale.direction = 0
-	//Regulate Activity of Digit Bags
-	let index = parseInt(event.key)-1
-	if(gamemanager.operations.send.inProcess){return}
-	if(gamemanager.digitBags[index]==null){return}
-
-	if(gamemanager.activeDigitBag!=null){
-	if(gamemanager.activeDigitBag.index == index+1){
-		gamemanager.activeDigitBag.isActivated = !gamemanager.activeDigitBag.isActivated
-		gamemanager.activeDigitBag = null
-		return
-	}
-	gamemanager.activeDigitBag.isActivated = false
-	}
-	gamemanager.activeDigitBag = gamemanager.digitBags[index]
-	gamemanager.activeDigitBag.isActivated = true
 }
 main()

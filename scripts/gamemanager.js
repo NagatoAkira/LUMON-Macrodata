@@ -25,6 +25,10 @@ class GameManager{
 		this.operations.scale = new ScaleOperation(this)
 		this.operations.background = new DrawBackground(this)
 		this.operations.move = new MoveMap(this)
+		this.operations.gameover = new RegisterGameOver(this)
+
+		// Check Is Collected All Data
+		this.isGameOver = false
 	}
 	init(){
 		let scale = this.initData.scale
@@ -65,7 +69,20 @@ class GameManager{
 		this.operations.restore.update()
 		this.operations.scale.update()
 		this.operations.move.update()
+		this.operations.gameover.update()
 		
+	}
+}
+class RegisterGameOver{
+	constructor(self){
+		this.self = self
+	}
+	registerGameOver(){
+		let progress = this.self.operations.background.generalProgress
+		this.self.isGameOver = (progress >= 100)
+	}
+	update(){
+		this.registerGameOver()
 	}
 }
 class DrawBackground{
@@ -434,7 +451,7 @@ class SendOperation{
 					obj.fadeTimer.restart()
 					delete this.allSent[i]
 
-					this.self.activeDigitBag.increaseProgress(1)
+					this.self.activeDigitBag.increaseProgress(100)
 				}
 			}
 		}
