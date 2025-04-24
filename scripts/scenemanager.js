@@ -12,6 +12,9 @@ class SceneManager{
 
 		this.isGameOver = false
 		this.isRestartGame = false
+
+		// Decorative Variable to Store File Number
+		this.fileNumber = 1
 	}
 	transitionUpdate(){
 		this.transition.timer.activate()
@@ -39,6 +42,9 @@ class SceneManager{
 			this.gamemanager = gamemanager
 			this.isGameOver = false
 			this.isRestartGame = false
+
+			this.fileNumber++
+			this.gamemanager.operations.background.fileNumber = this.fileNumber
 		}
 		if(this.isGameOver && this.gameover.button.isClicked && this.transition.timer.isStop && this.wait.timer.isStop){
 			this.transition.timer.restart()

@@ -6,6 +6,10 @@ canvas.width = 640
 
 var colors = {dark:"#102136", light:"#c2fffe"}
 
+// Get Logo Image
+var logo = new Image()
+logo.src = "lumon.svg"
+
 function clearScene(){
 	ctx.clearRect(0,0,canvas.width, canvas.height)
 	ctx.fillStyle = "#102136"
@@ -25,7 +29,6 @@ function main(){
 	ctx.fillStyle = "#c2fffe"
 
 	scenemanager.update()
-
 
 	mouse.isClicked = false
 }

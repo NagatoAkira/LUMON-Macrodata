@@ -90,6 +90,8 @@ class DrawBackground{
 		this.self = self
 
 		this.generalProgress = 0
+
+		this.fileNumber = 1
 	}
 	countGeneralProgress(){
 		// Count General Progress From Every Digit Bag
@@ -113,17 +115,30 @@ class DrawBackground{
 		ctx.stroke()
 		ctx.closePath()
 
-		// Draw File Name
+		// Draw Progress Amount
 		let gapX,gapY
 		gapX = 30
-		gapY = 15
+		gapY = 16
+		let numLen = this.generalProgress.toString().length
 		ctx.strokeRect(gapX,gapY,canvas.width-gapX*2, h-gapY*2)
 		ctx.strokeStyle = colors.light
 		ctx.font = "bold 22px sans-serif"
 		ctx.lineWidth = 1
-		ctx.strokeText(this.generalProgress.toString()+"% "+"Complete",canvas.width-gapX-200,h/2+7)
+		ctx.strokeText(this.generalProgress.toString()+"% "+"Complete",canvas.width-gapX-200-numLen*7,h/2+8)
 		ctx.fillStyle = colors.dark
 		ctx.lineWidth = 2
+
+		// Draw File Number
+		let num = this.fileNumber
+		ctx.fillStyle = colors.light
+		ctx.fillText("File "+num.toString(), 40, h/2+8)
+		ctx.fillStyle = colors.dark
+
+		// Draw Logo
+		let size = 95
+		ctx.drawImage(logo, canvas.width-size, -20, size, size)
+
+
 	}
 	drawLowerBorder(){
 		ctx.strokeStyle = colors.light
@@ -451,7 +466,7 @@ class SendOperation{
 					obj.fadeTimer.restart()
 					delete this.allSent[i]
 
-					this.self.activeDigitBag.increaseProgress(100)
+					this.self.activeDigitBag.increaseProgress(1)
 				}
 			}
 		}
