@@ -25,11 +25,12 @@ class DigitBag{
 		this.progress += step
 	}
 	draw(){
+		ctx.font = "bold 15px sans-serif"
 		ctx.strokeStyle = colors.light
 		ctx.lineWidth = 2
 		ctx.strokeRect(this.x-this.width/2, this.y-this.height/2, this.width, this.height)
 		ctx.fillStyle = colors.light
-		ctx.fillText("0"+this.index.toString(), this.x-5, this.y+4)
+		ctx.fillText("0"+this.index.toString(), this.x-5, this.y+6)
 	}
 	animate(){
 		this.animations.doors.animate()
@@ -65,8 +66,8 @@ class ProgressAnimation{
 		ctx.fillStyle = "#d6fffe"
 		ctx.fillRect(x-w/2, y-h/2+h+gap, w*progress, h/1.3)
 		ctx.fillStyle = "#84b8b6"
-		ctx.font = "bold 12px sans-serif"
-		ctx.fillText(this.progress.toString()+"%", x-w/2+7, y-h/2+h*1.5+gap+2)
+		ctx.font = "bold 15px sans-serif"
+		ctx.fillText(this.progress.toString()+"%", x-w/2+7, y-h/2+h*1.5+gap+3)
 	}
 	refillBar(){
 		// Change progress with animation

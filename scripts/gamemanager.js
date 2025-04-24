@@ -153,6 +153,20 @@ class DrawBackground{
 		ctx.lineTo(canvas.width,canvas.height-h+gap)
 		ctx.stroke()
 		ctx.closePath()
+
+		// Second Decorative Line
+		ctx.beginPath()
+		h = 28
+		ctx.moveTo(0, canvas.height-h)
+		ctx.lineTo(canvas.width,canvas.height-h)
+		ctx.stroke()
+		ctx.closePath()
+
+		// Draw Device Code
+		ctx.font = "bold 16px sans-serif"
+		ctx.fillStyle = colors.light
+		ctx.fillText("0x 15OAB : 0x0A15FC", canvas.width/2-82, canvas.height-7)
+		ctx.fillStyle = colors.dark
 	}
 	drawAllSent(){
 		// Make Background not working ONLY for Sent Digits
